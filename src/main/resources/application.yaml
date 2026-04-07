@@ -1,3 +1,17 @@
 spring:
   application:
     name: lottery-system
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/lottery_system?characterEncoding=utf8&useSSL=false
+    username: root
+    password: "045511"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case:
+      true
+logging:
+  config: classpath:logback-spring.xml
