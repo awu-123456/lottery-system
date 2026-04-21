@@ -13,4 +13,7 @@ public interface ServiceErrorCodeConstants {
     ErrorCode LOGIN_NOT_EXIST = new ErrorCode(109,"登录方式不存在");
     ErrorCode USER_INFO_IS_EMPTY = new ErrorCode(110,"用户信息为空");
     ErrorCode VERIFICATION_CODE_ERROR = new ErrorCode(111,"验证码校验失败");
+
+
+    ErrorCode PIC_UPLOAD_ERROR = new ErrorCode(500, "图片上传失败");
 }

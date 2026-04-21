@@ -8,10 +8,35 @@ spring:
     username: root
     password: "045511"
     driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 8888
+      timeout: 60s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 5s
+  web:
+    resources:
+      static-location: classpath/static,file:${pic.local-path}
+
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
+  type-handlers-package: com.example.lotterysystem.dao.handler
   configuration:
     map-underscore-to-camel-case:
       true
+
 logging:
   config: classpath:logback-spring.xml
+
+sms:
+  access-key-id:
+  access-key-secret:
+  sign-name:
+
+pic:
+  local-path: D:/PIC
