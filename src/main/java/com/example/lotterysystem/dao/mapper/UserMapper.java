@@ -22,4 +22,6 @@ public interface UserMapper {
     UserDO selectByPhoneNumber(@Param("phoneNumber") Encrypt phoneNumber);
 
     List<UserDO> selectUserListByIdentity(@Param("identity") String identity);
+
+    List<Long> selectExistById(@Param("items") List<Long> userIds);
 }

@@ -29,4 +29,12 @@
         </if>
         order by id desc
     </select>
+
+    <select id="selectExistById">
+        select id from user
+        where id in
+        <foreach item="item" collection="items" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
