@@ -18,13 +18,16 @@ import com.example.lotterysystem.service.enums.UserIdentityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -63,11 +66,22 @@ public class UserController {
     public CommonResult<List<BaseUserInfoResult>> findBaseUserInfo(String identity) {
         logger.info("findBaseUserInfo BaseUserInfoResult:{}", JacksonUtil.writeValueAsString(identity));
         List<UserDTO> userDTOList = userService.findUserInfo(UserIdentityEnum.forName(identity));
-        return CommonResult.success(convertToBaseUserInfoResult(userDTOList));
+        return CommonResult.success(convertToList(userDTOList));
     }
 
-    private List<BaseUserInfoResult> convertToBaseUserInfoResult(List<UserDTO> userDTOList) {
+    private List<BaseUserInfoResult> convertToList(List<UserDTO> userDTOList) {
+        if(CollectionUtils.isEmpty(userDTOList)) {
+            return Arrays.asList();
+        }
 
+        return userDTOList.stream()
+                .map(userDTO -> {
+                    BaseUserInfoResult baseUserInfoResult = new BaseUserInfoResult();
+                    baseUserInfoResult.setUserId(userDTO.getUserId());
+                    baseUserInfoResult.setUserName(userDTO.getUserName());
+                    baseUserInfoResult.setIdentity(userDTO.getIdentity().name());
+                    return baseUserInfoResult;
+                }).collect(Collectors.toList());
     }
 
     private UserLoginResult convertToUserLoginResult(UserLoginDTO userLoginDTO) {

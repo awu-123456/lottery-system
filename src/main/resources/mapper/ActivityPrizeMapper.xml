@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lotterysystem.dao.mapper.ActivityPrizeMapper">
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into activity_prize (activity_id, prize_id, prize_amount, prize_tiers, status)
+        values
+        <foreach collection="items" item="item" index="index" separator=",">
+            (#{item.activityId}, #{item.prizeId}, #{item.prizeAmount}, #{item.prizeTiers}, #{item.status})
+        </foreach>
+    </insert>
+</mapper>

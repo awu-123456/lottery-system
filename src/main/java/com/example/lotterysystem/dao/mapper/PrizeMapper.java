@@ -15,4 +15,6 @@ public interface PrizeMapper {
     List<PrizeDO> selectPrizeList(@Param("offset") int offset, @Param("pageSize") Integer pageSize);
 
     List<Long> selectExistById(@Param("items") List<Long> prizeIds);
+
+    List<PrizeDO> batchSelectByIds(@Param("items") List<Long> prizeIds);
 }

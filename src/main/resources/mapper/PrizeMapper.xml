@@ -21,4 +21,12 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="batchSelectByIds">
+        select * from prize
+        where id in
+        <foreach item="item" collection="items" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
