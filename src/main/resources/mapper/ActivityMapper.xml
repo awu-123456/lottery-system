@@ -5,4 +5,12 @@
         insert into activity (activity_name, description, status)
         values (#{activityName}, #{description}, #{status})
     </insert>
+
+    <select id="count" resultType="int">
+        select count(1) from activity
+    </select>
+
+    <select id="selectActivityList" resultType="com.example.lotterysystem.dao.dataobject.ActivityDO">
+        select * from activity order by id desc limit #{offset}, #{pageSize}
+    </select>
 </mapper>

@@ -4,19 +4,14 @@ import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
 import com.example.lotterysystem.common.utils.JacksonUtil;
 import com.example.lotterysystem.common.utils.RedisUtil;
-import com.example.lotterysystem.controller.param.CreateActivityParam;
-import com.example.lotterysystem.controller.param.CreatePrizeByActivityParam;
-import com.example.lotterysystem.controller.param.CreatePrizeParam;
-import com.example.lotterysystem.controller.param.CreateUserByActivityParam;
+import com.example.lotterysystem.controller.param.*;
 import com.example.lotterysystem.dao.dataobject.ActivityDO;
 import com.example.lotterysystem.dao.dataobject.ActivityPrizeDO;
 import com.example.lotterysystem.dao.dataobject.ActivityUserDo;
 import com.example.lotterysystem.dao.dataobject.PrizeDO;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.ActivityService;
-import com.example.lotterysystem.service.dto.ActivityDetailDTO;
-import com.example.lotterysystem.service.dto.CreateActivityDTO;
-import com.example.lotterysystem.service.dto.PrizeDTO;
+import com.example.lotterysystem.service.dto.*;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityPrizeTiersEnum;
 import com.example.lotterysystem.service.enums.ActivityStatusEnum;
@@ -27,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +99,24 @@ public class ActivityServiceImpl implements ActivityService {
         return createActivityDTO;
     }
 
+    @Override
+    public PageListDTO<ActivityDTO> findActivityList(PageParam param) {
+        Integer total = activityMapper.count();
+
+        List<ActivityDO> activityDOList = activityMapper.selectActivityList(param.offset(),param.getPageSize());
+        List<ActivityDTO> activityDTOList = activityDOList.stream()
+                .map(activityDO -> {
+                    ActivityDTO activityDTO = new ActivityDTO();
+                    activityDTO.setActivityId(activityDO.getId());
+                    activityDTO.setActivityName(activityDO.getActivityName());
+                    activityDTO.setDescription(activityDO.getDescription());
+                    activityDTO.setStatus(ActivityStatusEnum.forName(activityDO.getStatus()));
+                    return activityDTO;
+                }).collect(Collectors.toList());
+
+        return new PageListDTO<>(total,activityDTOList);
+    }
+
     private void cacheActivity(ActivityDetailDTO detailDTO) {
         if(detailDTO == null || detailDTO.getActivityId() == null) {
             logger.warn("要缓存的活动信息不存在!");
@@ -113,7 +127,25 @@ public class ActivityServiceImpl implements ActivityService {
                     JacksonUtil.writeValueAsString(detailDTO),
                     ACTIVITY_TIMEOUT);
         } catch (Exception e) {
-            logger.warn("缓存活动异常，ActivityDetailDTO={}", JacksonUtil.writeValueAsString(detailDTO),e);
+            logger.error("缓存活动异常，ActivityDetailDTO={}", JacksonUtil.writeValueAsString(detailDTO),e);
+        }
+    }
+
+    private ActivityDetailDTO getActivityDetailDTO(Long activityId) {
+        if(activityId == null) {
+            logger.warn("获取缓存活动数据的activityId为空！");
+            return null;
+        }
+        try {
+            String str = redisUtil.get(ACTIVITY_PREFIX+activityId);
+            if(!StringUtils.hasText(str)) {
+                logger.info("获取的缓存活动数据为空！key={}", ACTIVITY_PREFIX+activityId);
+                return null;
+            }
+            return JacksonUtil.readValue(str, ActivityDetailDTO.class);
+        } catch (Exception e) {
+            logger.error("从缓存中获取活动信息异常，key={}",ACTIVITY_PREFIX+activityId,e);
+            return  null;
         }
     }
 

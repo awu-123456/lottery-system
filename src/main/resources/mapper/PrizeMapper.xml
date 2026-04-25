@@ -14,7 +14,7 @@
         select * from prize order by id desc limit #{offset}, #{pageSize}
     </select>
 
-    <select id="selectExistById">
+    <select id="selectExistById" resultType="java.lang.Long">
         select id from prize
         where id in
         <foreach item="item" collection="items" open="(" separator="," close=")">
@@ -22,7 +22,7 @@
         </foreach>
     </select>
 
-    <select id="batchSelectByIds">
+    <select id="batchSelectByIds" resultType="com.example.lotterysystem.dao.dataobject.PrizeDO">
         select * from prize
         where id in
         <foreach item="item" collection="items" open="(" separator="," close=")">
