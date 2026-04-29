@@ -7,7 +7,7 @@ import com.example.lotterysystem.common.utils.RedisUtil;
 import com.example.lotterysystem.controller.param.*;
 import com.example.lotterysystem.dao.dataobject.ActivityDO;
 import com.example.lotterysystem.dao.dataobject.ActivityPrizeDO;
-import com.example.lotterysystem.dao.dataobject.ActivityUserDo;
+import com.example.lotterysystem.dao.dataobject.ActivityUserDO;
 import com.example.lotterysystem.dao.dataobject.PrizeDO;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.ActivityService;
@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,22 +75,22 @@ public class ActivityServiceImpl implements ActivityService {
         activityPrizeMapper.batchInsert(activityPrizeDOList);
 
         List<CreateUserByActivityParam> userParams = param.getActivityUserList();
-        List<ActivityUserDo> activityUserDoList = userParams.stream()
+        List<ActivityUserDO> activityUserDOList = userParams.stream()
                 .map(userParam -> {
-                    ActivityUserDo activityUserDo = new ActivityUserDo();
+                    ActivityUserDO activityUserDo = new ActivityUserDO();
                     activityUserDo.setActivityId(activityDO.getId());
                     activityUserDo.setUserId(userParam.getUserId());
                     activityUserDo.setUserName(userParam.getUserName());
                     activityUserDo.setStatus(ActivityUserStatusEnum.INIT.name());
                     return activityUserDo;
                 }).collect(Collectors.toList());
-        activityUserMapper.batchInsert(activityUserDoList);
+        activityUserMapper.batchInsert(activityUserDOList);
 
         List<Long> prizeIds = param.getActivityPrizeList().stream()
                 .map(CreatePrizeByActivityParam::getPrizeId)
                 .collect(Collectors.toList());
         List<PrizeDO> prizeDOList = prizeMapper.batchSelectByIds(prizeIds);
-        ActivityDetailDTO detailDTO = convertToActivityDetailDTO(activityDO,activityUserDoList,activityPrizeDOList,prizeDOList);
+        ActivityDetailDTO detailDTO = convertToActivityDetailDTO(activityDO, activityUserDOList,activityPrizeDOList,prizeDOList);
 
         cacheActivity(detailDTO);
         CreateActivityDTO createActivityDTO = new CreateActivityDTO();
@@ -115,6 +114,49 @@ public class ActivityServiceImpl implements ActivityService {
                 }).collect(Collectors.toList());
 
         return new PageListDTO<>(total,activityDTOList);
+    }
+
+    @Override
+    public ActivityDetailDTO getActivityDetail(Long activityId) {
+        if(activityId == null) {
+            logger.warn("查询活动详细信息失败，activityId为空！");
+            return null;
+        }
+        ActivityDetailDTO detailDTO = getActivityDetailDTO(activityId);
+        if(detailDTO != null) {
+            logger.info("查询活动详细信息成功！detailDTO={}", JacksonUtil.writeValueAsString(detailDTO));
+            return detailDTO;
+        }
+        ActivityDO activityDO = activityMapper.selectById(activityId);
+        List<ActivityPrizeDO> apDOList = activityPrizeMapper.selectByActivityId(activityId);
+        List<ActivityUserDO> auDOList = activityUserMapper.selectByActivityId(activityId);
+        List<Long> prizeIds = apDOList.stream()
+                .map(ActivityPrizeDO::getPrizeId)
+                .collect(Collectors.toList());
+        List<PrizeDO> prizeDOList = prizeMapper.batchSelectByIds(prizeIds);
+        detailDTO = convertToActivityDetailDTO(activityDO, auDOList, apDOList,prizeDOList);
+        cacheActivity(detailDTO);
+        return detailDTO;
+    }
+
+    @Override
+    public void cacheActivity(Long activityId) {
+        if(activityId == null) {
+            logger.warn("要缓存的活动id为空！");
+            throw new ServiceException(ServiceErrorCodeConstants.CACHE_ACTIVITY_ID_IS_EMPTY);
+        }
+        ActivityDO activityDO = activityMapper.selectById(activityId);
+        if(activityDO == null) {
+            logger.error("要缓存的活动id有误！");
+            throw new ServiceException(ServiceErrorCodeConstants.CACHE_ACTIVITY_ID_ERROR);
+        }
+        List<ActivityPrizeDO> apDOList = activityPrizeMapper.selectByActivityId(activityId);
+        List<ActivityUserDO> auDOList = activityUserMapper.selectByActivityId(activityId);
+        List<Long> prizeIds = apDOList.stream()
+                .map(ActivityPrizeDO::getPrizeId)
+                .collect(Collectors.toList());
+        List<PrizeDO> prizeDOList = prizeMapper.batchSelectByIds(prizeIds);
+        cacheActivity(convertToActivityDetailDTO(activityDO, auDOList, apDOList,prizeDOList));
     }
 
     private void cacheActivity(ActivityDetailDTO detailDTO) {
@@ -150,7 +192,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     private ActivityDetailDTO convertToActivityDetailDTO(ActivityDO activityDO,
-                                                         List<ActivityUserDo> activityUserDoList,
+                                                         List<ActivityUserDO> activityUserDOList,
                                                          List<ActivityPrizeDO> activityPrizeDOList,
                                                          List<PrizeDO> prizeDOList) {
         ActivityDetailDTO detailDTO = new ActivityDetailDTO();
@@ -173,14 +215,14 @@ public class ActivityServiceImpl implements ActivityService {
                         prizeDTO.setPrice(prizeDO.getPrice());
                         prizeDTO.setDescription(prizeDO.getDescription());
                     });
-                    prizeDTO.setPrizeTiersEnum(ActivityPrizeTiersEnum.forName(apDO.getPrizeTiers()));
+                    prizeDTO.setTiers(ActivityPrizeTiersEnum.forName(apDO.getPrizeTiers()));
                     prizeDTO.setPrizeAmount(apDO.getPrizeAmount());
                     prizeDTO.setStatus(ActivityPrizeStatusEnum.forName(apDO.getStatus()));
                     return prizeDTO;
                 }).collect(Collectors.toList());
         detailDTO.setPrizeDTOList(prizeDTOList);
 
-        List<ActivityDetailDTO.UserDTO> userDTOList = activityUserDoList.stream()
+        List<ActivityDetailDTO.UserDTO> userDTOList = activityUserDOList.stream()
                 .map(auDO -> {
                     ActivityDetailDTO.UserDTO userDTO = new ActivityDetailDTO.UserDTO();
                     userDTO.setUserId(auDO.getUserId());

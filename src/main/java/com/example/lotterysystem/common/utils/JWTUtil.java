@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * @author: yibo
  */
+@Component
 public class JWTUtil {
     private static final Logger logger = LoggerFactory.getLogger(JWTUtil.class);
     /**

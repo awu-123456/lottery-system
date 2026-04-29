@@ -25,5 +25,14 @@ public interface ServiceErrorCodeConstants {
     ErrorCode CACHE_ACTIVITY_ID_ERROR = new ErrorCode(307, "缓存活动的活动id有误");
 
 
+    ErrorCode ACTIVITY_OR_PRIZE_IS_EMPTY = new ErrorCode(400, "抽奖活动或关联的奖品不存在");
+    ErrorCode ACTIVITY_COMPLETED = new ErrorCode(401, "抽奖活动已完成，无法抽奖");
+    ErrorCode ACTIVITY_PRIZE_COMPLETED = new ErrorCode(402, "当前奖品已经被抽取，无法抽奖");
+    ErrorCode WINNER_PRIZE_AMOUNT_ERROR = new ErrorCode(403, "中奖人数与奖品数量不一致，无法抽奖");
+
+
     ErrorCode PIC_UPLOAD_ERROR = new ErrorCode(500, "图片上传失败");
+
+
+    ErrorCode SMS_SEND_ERROR = new ErrorCode(600, "验证码发送失败");
 }

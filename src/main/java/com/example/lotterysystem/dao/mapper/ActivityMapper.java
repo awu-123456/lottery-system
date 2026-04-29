@@ -13,4 +13,8 @@ public interface ActivityMapper {
     int count();
 
     List<ActivityDO> selectActivityList(@Param("offset") int offset, @Param("pageSize") Integer pageSize);
+
+    ActivityDO selectById(@Param("id") Long id);
+
+    void updateStatus(@Param("id") Long activityId, @Param("status") String status);
 }

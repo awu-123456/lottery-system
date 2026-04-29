@@ -73,7 +73,9 @@
 </div>
 
 <script>
+    // 获取链接参数
     var params = new URLSearchParams(window.location.search);
+    var jumpList = params.get('jumpList');
     var admin = params.get('admin');
 
     // 判断是否隐藏密码输入框
@@ -121,20 +123,23 @@
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function(result) {
-                    if(result.code != 200) {
-                        alert("注册失败!" + result.msg);
+                    if (result.code != 200) {
+                        alert("注册失败！" + result.msg);
                     } else {
-                        if(jumpList === 'true') {
-                            window.parent.postMessage({
+                        if (jumpList === 'true') {
+                            // 给父页面发消息，表示要跳转到人员列表页
+                            window.parent.postMessage(
+                                {
                                     from: 'user-list.html',
                                     id: '#userList'
-                                },'*'
+                                }, '*'
                             );
                         } else {
-                            alert("注册成功，去登录!");
-                            location.assign("blogin.html");                        
+                            alert("注册成功，去登录！");
+                            location.assign("blogin.html");
                         }
                     }
+
                 }
             });
             return false; // 阻止表单的默认提交行为

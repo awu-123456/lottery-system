@@ -8,4 +8,26 @@
             (#{item.activityId}, #{item.userId}, #{item.userName}, #{item.status})
         </foreach>
     </insert>
+
+    <update id="batchUpdateStatus">
+        update activity_user set status = #{status}
+        where activity_id = #{activityId}
+        and user_id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
+    <select id="selectByActivityId" resultType="com.example.lotterysystem.dao.dataobject.ActivityUserDO">
+        select * from activity_user where activity_id = #{activityId}
+    </select>
+
+    <select id="batchSelectByAUId" resultType="com.example.lotterysystem.dao.dataobject.ActivityUserDO">
+        select * from activity_user
+        where activity_id = #{activityId}
+        and user_id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

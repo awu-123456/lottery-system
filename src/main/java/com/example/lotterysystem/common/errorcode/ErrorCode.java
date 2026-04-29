@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class ErrorCode {
-    private Integer code;
-    private String message;
+    private final Integer code;
+    private final String msg;
 
-    public ErrorCode(int code, String message) {
+    public ErrorCode(int code, String msg) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
 }

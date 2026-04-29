@@ -24,4 +24,6 @@ public interface UserMapper {
     List<UserDO> selectUserListByIdentity(@Param("identity") String identity);
 
     List<Long> selectExistById(@Param("items") List<Long> userIds);
+
+    List<UserDO> batchSelectByIds(@Param("items") List<Long> ids);
 }

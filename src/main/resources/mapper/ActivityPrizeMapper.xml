@@ -8,4 +8,20 @@
             (#{item.activityId}, #{item.prizeId}, #{item.prizeAmount}, #{item.prizeTiers}, #{item.status})
         </foreach>
     </insert>
+
+    <update id="updateStatus">
+        update activity_prize set status = #{status} where activity_id = #{activityId} and prize_id = #{prizeId}
+    </update>
+
+    <select id="selectByActivityId" resultType="com.example.lotterysystem.dao.dataobject.ActivityPrizeDO">
+        select * from activity_prize where activity_id = #{activityId}
+    </select>
+
+    <select id="selectByAPId" resultType="com.example.lotterysystem.dao.dataobject.ActivityPrizeDO">
+        select * from activity_prize where activity_id = #{activityId} and prize_id = #{prizeId}
+    </select>
+
+    <select id="countPrize" resultType="java.lang.Integer">
+        select count(1) from activity_prize where activity_id = #{activityId} and status = #{status}
+    </select>
 </mapper>

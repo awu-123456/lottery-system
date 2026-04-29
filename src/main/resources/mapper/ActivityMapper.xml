@@ -6,11 +6,19 @@
         values (#{activityName}, #{description}, #{status})
     </insert>
 
+    <update id="updateStatus">
+        update activity set status = #{status} where id = #{id}
+    </update>
+
     <select id="count" resultType="int">
         select count(1) from activity
     </select>
 
     <select id="selectActivityList" resultType="com.example.lotterysystem.dao.dataobject.ActivityDO">
         select * from activity order by id desc limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectById" resultType="com.example.lotterysystem.dao.dataobject.ActivityDO">
+        select * from activity where id = #{id}
     </select>
 </mapper>

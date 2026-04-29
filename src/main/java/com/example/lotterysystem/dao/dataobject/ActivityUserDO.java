@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ActivityUserDo extends BaseDO{
+public class ActivityUserDO extends BaseDO{
 
     private Long activityId;
 

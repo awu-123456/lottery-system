@@ -191,7 +191,7 @@
 <script src="./js/toastr.min.js"></script>
 <script>
     var userToken = localStorage.getItem("user_token");
-    // 初始时奖品列表为空
+    // 初始时奖品列表为空: 勾选的奖品存放
     var selectedPrizes = [];
     // 显示奖品选择模态框
     function showPrizesModal() {
@@ -252,7 +252,7 @@
             var prizeTiers = $('select[name="level-' + prizeId + '"]').val();
             selectedPrizes.push({
                 prizeId: prizeId,
-                prizeAmount: prizeAmount,
+                amount: prizeAmount,
                 prizeTiers: prizeTiers
             });
         });
@@ -267,7 +267,7 @@
         }
     }
 
-    // 初始时人员列表为空
+    // 初始时人员列表为空, 存放的勾选的人员信息
     var selectedUsers = [];
     // 显示人员选择模态框
     function showUsersModal() {

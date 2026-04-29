@@ -41,7 +41,7 @@ public class ActivityDetailDTO {
 
         private String description;
 
-        private ActivityPrizeTiersEnum prizeTiersEnum;
+        private ActivityPrizeTiersEnum tiers;
 
         private Long prizeAmount;
 

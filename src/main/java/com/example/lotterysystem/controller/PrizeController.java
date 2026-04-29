@@ -30,7 +30,7 @@ public class PrizeController {
     private PrizeService prizeService;
 
     @RequestMapping("/prize/create")
-    public CommonResult<Long> createPrize(@Validated @RequestPart() CreatePrizeParam param,
+    public CommonResult<Long> createPrize(@Validated @RequestPart("param") CreatePrizeParam param,
                                           @RequestPart("prizePic") MultipartFile picFile) {
         logger.info("createPrize CreatePrizeParam:{}", JacksonUtil.writeValueAsString(param));
         return CommonResult.success(prizeService.createPrize(param,picFile));

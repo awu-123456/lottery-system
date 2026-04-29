@@ -30,10 +30,18 @@
         order by id desc
     </select>
 
-    <select id="selectExistById">
+    <select id="selectExistById" resultType="java.lang.Long">
         select id from user
         where id in
         <foreach item="item" collection="items" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="batchSelectByIds" resultType="com.example.lotterysystem.dao.dataobject.UserDO">
+        select * from user
+        where id in
+        <foreach collection="items" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
     </select>

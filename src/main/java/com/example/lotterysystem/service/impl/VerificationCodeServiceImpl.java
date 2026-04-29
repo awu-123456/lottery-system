@@ -13,11 +13,11 @@ import java.util.Map;
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
     @Autowired
-    private SMSUtil smsUtil;
+    private SMSVerifyCodeUtil smsVerifyCodeUtil;
     @Autowired
     private RedisUtil redisUtil;
 
-    private static final String VERIFICATION_CODE_TEMPLATE_CODE = "SMS_465324787";
+    private static final String VERIFICATION_CODE_TEMPLATE_CODE = "100001";
     private static final String VERIFICATION_CODE_PREFIX = "VERIFICATION_CODE_";
     private static final Long VERIFICATION_CODE_TIMEOUT = 60L;
 
@@ -29,7 +29,10 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         String code = CaptchaUtil.getCaptcha(4);
         Map<String,String> map = new HashMap<>();
         map.put("code",code);
-        smsUtil.sendMessage(VERIFICATION_CODE_TEMPLATE_CODE, phoneNumber,JacksonUtil.writeValueAsString(map));
+        boolean success = smsVerifyCodeUtil.sendVerifyCode(phoneNumber, code, VERIFICATION_CODE_TEMPLATE_CODE);
+        if (!success) {
+            throw new ServiceException(ServiceErrorCodeConstants.SMS_SEND_ERROR);
+        }
         redisUtil.set(VERIFICATION_CODE_PREFIX+ phoneNumber, code,VERIFICATION_CODE_TIMEOUT);
     }
 

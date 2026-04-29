@@ -8,9 +8,11 @@ import com.example.lotterysystem.controller.param.CreateActivityParam;
 import com.example.lotterysystem.controller.param.PageParam;
 import com.example.lotterysystem.controller.result.CreateActivityResult;
 import com.example.lotterysystem.controller.result.FindPrizeListResult;
+import com.example.lotterysystem.controller.result.GetActivityDetailResult;
 import com.example.lotterysystem.controller.result.findActivityListResult;
 import com.example.lotterysystem.service.ActivityService;
 import com.example.lotterysystem.service.dto.ActivityDTO;
+import com.example.lotterysystem.service.dto.ActivityDetailDTO;
 import com.example.lotterysystem.service.dto.CreateActivityDTO;
 import com.example.lotterysystem.service.dto.PageListDTO;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,9 +39,52 @@ public class ActivityController {
         return CommonResult.success(convertToCreateActivityResult(activityService.createActivity(param)));
     }
 
+    @RequestMapping("/activity/find-list")
     public CommonResult<findActivityListResult> findActivityList(PageParam pageParam) {
         logger.info("findActivityList PageParam:{}", JacksonUtil.writeValueAsString(pageParam));
         return CommonResult.success(convertTofindActivityListResult(activityService.findActivityList(pageParam)));
+    }
+
+    @RequestMapping("/activity-detail/find")
+    public CommonResult<GetActivityDetailResult> getActivityDetail(Long activityId) {
+        logger.info("getActivityDetail ActivityId:{}", activityId);
+        return CommonResult.success(convertToGetActivityDetailResult(activityService.getActivityDetail(activityId)));
+    }
+
+    private GetActivityDetailResult convertToGetActivityDetailResult(ActivityDetailDTO detailDTO) {
+        if(detailDTO == null) {
+            throw new ControllerException(ControllerErrorCodeConstants.GET_ACTIVITY_DETAIL_ERROR);
+        }
+        GetActivityDetailResult result = new GetActivityDetailResult();
+        result.setActivityId(detailDTO.getActivityId());
+        result.setActivityName(detailDTO.getActivityName());
+        result.setDescription(detailDTO.getDesc());
+        result.setValid(detailDTO.valid());
+
+        result.setPrizes(detailDTO.getPrizeDTOList().stream()
+                .sorted(Comparator.comparingInt(prizeDTO -> prizeDTO.getTiers().getCode()))
+                .map(prizeDTO -> {
+                    GetActivityDetailResult.Prize prize = new GetActivityDetailResult.Prize();
+                    prize.setPrizeId(prizeDTO.getPrizeId());
+                    prize.setName(prizeDTO.getName());
+                    prize.setImageUrl(prizeDTO.getImageUrl());
+                    prize.setPrice(prizeDTO.getPrice());
+                    prize.setDescription(prizeDTO.getDescription());
+                    prize.setPrizeTierName(prizeDTO.getTiers().getMessage());
+                    prize.setPrizeAmount(prizeDTO.getPrizeAmount());
+                    prize.setValid(prizeDTO.valid());
+                    return prize;
+                }).collect(Collectors.toList()));
+
+        result.setUsers(detailDTO.getUserDTOList().stream()
+                .map(userDTO -> {
+                    GetActivityDetailResult.User user = new GetActivityDetailResult.User();
+                    user.setUserId(userDTO.getUserId());
+                    user.setUserName(userDTO.getUserName());
+                    user.setValid(userDTO.valid());
+                    return user;
+                }).collect(Collectors.toList()));
+        return result;
     }
 
     private findActivityListResult convertTofindActivityListResult(PageListDTO<ActivityDTO> activityList) {

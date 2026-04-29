@@ -31,6 +31,6 @@ public class CommonResult<T> implements Serializable {
     }
 
     public static <T> CommonResult<T> error(ErrorCode errorCode) {
-        return error(errorCode.getCode(), errorCode.getMessage());
+        return error(errorCode.getCode(), errorCode.getMsg());
     }
 }

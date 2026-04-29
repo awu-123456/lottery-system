@@ -29,4 +29,8 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="selectById" resultType="com.example.lotterysystem.dao.dataobject.PrizeDO">
+        select * from prize where id = #{id}
+    </select>
 </mapper>

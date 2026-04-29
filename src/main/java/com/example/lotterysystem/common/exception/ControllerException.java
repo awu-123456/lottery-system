@@ -21,6 +21,6 @@ public class ControllerException extends RuntimeException{
 
     public ControllerException(ErrorCode errorCode) {
         this.code = errorCode.getCode();
-        this.msg = errorCode.getMessage();
+        this.msg = errorCode.getMsg();
     }
 }

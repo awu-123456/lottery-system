@@ -12,7 +12,7 @@ public class CreatePrizeByActivityParam implements Serializable {
     private Long prizeId;
 
     @NotNull(message = "奖品数量不能为空！")
-    private Long Amount;
+    private Long amount;
 
     @NotBlank(message = "奖品等奖不能为空！")
     private String prizeTiers;

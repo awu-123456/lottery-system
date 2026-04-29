@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String code = verificationCodeService.getVerificationCode(
-                loginParam.getMandatoryIdentity());
+                loginParam.getLoginMobile());
         if(!loginParam.getVerificationCode().equals(code)) {
             throw new ServiceException(ServiceErrorCodeConstants.VERIFICATION_CODE_ERROR);
         }

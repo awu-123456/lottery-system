@@ -1,6 +1,7 @@
 package com.example.lotterysystem.dao.mapper;
 
 import com.example.lotterysystem.dao.dataobject.PrizeDO;
+import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +18,6 @@ public interface PrizeMapper {
     List<Long> selectExistById(@Param("items") List<Long> prizeIds);
 
     List<PrizeDO> batchSelectByIds(@Param("items") List<Long> prizeIds);
+
+    PrizeDO selectById(@Param("id") Long id);
 }
