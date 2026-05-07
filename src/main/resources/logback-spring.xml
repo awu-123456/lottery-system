@@ -14,8 +14,8 @@
 
     <springProfile name="prod,test">
         <!--ERROR级别的日志放在logErrorDir目录下，INFO级别的日志放在logInfoDir目录下-->
-        <property name="logback.logErrorDir" value="/root/lottery-system/logs/error"/>
-        <property name="logback.logInfoDir" value="/root/lottery-system/logs/info"/>
+        <property name="logback.logErrorDir" value="/home/ubuntu/lottery-system/logs/error"/>
+        <property name="logback.logInfoDir" value="/home/ubuntu/lottery-system/logs/info"/>
         <property name="logback.appName" value="lotterySystem"/>
         <contextName>${logback.appName}</contextName>
 
