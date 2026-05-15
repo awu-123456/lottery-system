@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
         userDO.setEmail(param.getMail());
         userDO.setPhoneNumber(new Encrypt(param.getPhoneNumber()));
         if(StringUtils.hasText(param.getPassword())) {
-            userDO.setPassword(param.getPassword());
+            userDO.setPassword(DigestUtil.sha256Hex(param.getPassword()));
         }
         userDO.setIdentity(param.getIdentity());
         userMapper.insert(userDO);

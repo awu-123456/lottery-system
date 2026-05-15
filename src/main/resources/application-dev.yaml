@@ -1,8 +1,6 @@
 spring:
-  application:
-    name: lottery-system
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/lottery_system?characterEncoding=utf8&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/lottery_system?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: "045511"
     driver-class-name: com.mysql.cj.jdbc.Driver
